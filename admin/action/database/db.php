@@ -1,5 +1,6 @@
 <?php
-
+// Note: This Class added from My Old Project.
+// 
 class Database
 {
     private $db_host = "localhost";
