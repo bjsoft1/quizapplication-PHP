@@ -3,6 +3,10 @@ session_start();
 if (!isset($_SESSION['student_Id']) || !isset($_SESSION['student_Name'])) {
     session_destroy();
     header("Location: index.php");
+    //TODO: Old History view in Student Section
+    //TODO: If old Quiz cannot complected then continue stating system from Student System
+    //TODO: Sign Up
+    //TODO: Forgot Password
 }
 ?>
 <!DOCTYPE html>
@@ -102,29 +106,7 @@ if (!isset($_SESSION['student_Id']) || !isset($_SESSION['student_Name'])) {
 
 </html>
 <style>
- .tbl-data
- {
-    width: 100%;
-    border-collapse: collapse;
-    background-color: rgb(240,240,240);
- }
- .tbl-data th
- {
-background-color: #4681f4;
-padding: 5px;
-color: white;
-font-size: 14px;
-font-weight: normal;
-text-align: left;
- }
- .tbl-data td
-{
-    padding: 5px;
-}
-.tbl-data tr:nth-child(even)
-{
-background-color: rgb(230,230,230);
-}
+ 
 </style>
 </style>
 <script>

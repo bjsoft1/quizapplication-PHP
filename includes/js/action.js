@@ -340,7 +340,7 @@ function onFormSubmit(username,password,isParent = false)
   formdata.append("username", username);
   formdata.append("password", password);
   $.ajax({
-url: "admin/action/action.php",
+url: isParent === true?'action/action.php':'admin/action/action.php',
 type: "POST",
 data: formdata,
 processData: false,

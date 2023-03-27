@@ -94,13 +94,27 @@ outline: none;
 {
     padding: 25px 0px;
 }
-.input-group .tx-input
+.input-group .tx-input,.input-group .div-options-list,.div-options-list .tx-input2
 {
   float: right;
   width: calc(100% - 140px);
   padding: 8px 10px;
   border: 1px solid rgb(200, 200, 200);
   margin-top: -10px;
+}
+.input-group .div-options-list
+{
+  border: 1px solid rgb(200, 200, 200);
+  padding: 15px;
+  width: calc(100% - 150px);
+}
+.div-options-list .tx-input2
+{
+  width: calc(100% - 60px);
+  margin: 0px;
+  float: none;
+
+  
 }
 .input-group .btn-submit
 {
@@ -150,14 +164,17 @@ background-color: green;
 
 
 
-.btn-start {
+.btn-start,.btn-add {
   padding: 10px 40px;
   background-color: #4681f4;
   cursor: pointer;
   color: white;
   border-radius: 5px;
 }
-
+.btn-add
+{
+padding: 10px;
+}
 .div-head {
   background-color: rgb(240, 240, 240);
   padding: 0px 10px;
@@ -240,7 +257,30 @@ background-color: green;
 }
 
 
-
+/* Table */
+.tbl-data
+ {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: rgb(240,240,240);
+ }
+ .tbl-data th
+ {
+background-color: #4681f4;
+padding: 5px;
+color: white;
+font-size: 14px;
+font-weight: normal;
+text-align: left;
+ }
+ .tbl-data td
+{
+    padding: 5px;
+}
+.tbl-data tr:nth-child(even)
+{
+background-color: rgb(230,230,230);
+}
 
 
 @media(max-width:550px)
