@@ -1,0 +1,28 @@
+{
+    "success": "Your, Next Question.",
+    "code": "200",
+    "question": {
+        "questionId": "14",
+        "question": "Question-14",
+        "options": [
+            [
+                {
+                    "id": "56",
+                    "option": "Options-14-04"
+                },
+                {
+                    "id": "54",
+                    "option": "Options-14-02"
+                },
+                {
+                    "id": "55",
+                    "option": "Options-14-03"
+                },
+                {
+                    "id": "53",
+                    "option": "Options-14-01"
+                }
+            ]
+        ]
+    }
+}
