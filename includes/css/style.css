@@ -145,6 +145,104 @@ background-color: red;
 {
 background-color: green;
 }
+
+
+
+
+
+.btn-start {
+  padding: 10px 40px;
+  background-color: #4681f4;
+  cursor: pointer;
+  color: white;
+  border-radius: 5px;
+}
+
+.div-head {
+  background-color: rgb(240, 240, 240);
+  padding: 0px 10px;
+}
+
+.div-head .head-1 {
+  width: 55px;
+}
+
+.div-head .head-2 {
+  width: calc(100% - 120px);
+}
+
+.div-head .head-3 {
+  width: 60px;
+}
+
+.div-head .head-3 .btn-close {
+  height: 20px;
+  background-color: transparent;
+  font-size: 16px;
+  height: 40px;
+  cursor: pointer;
+}
+
+.div-progressbar {
+  width: calc(100% - 200px);
+  max-width: 550px;
+  background-color: rgb(200, 200, 200);
+  height: 10px;
+  margin-right: 10px;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.div-progressbar div {
+  width: 10%;
+  height: 30px;
+  background-color: #4681f4;
+}
+
+.div-image {
+  width: 60%;
+  max-width: 100px;
+}
+
+.div-image img {
+  width: 100%;
+  height: 100%;
+}
+
+.div-options .options {
+  margin: 0px 10px;
+}
+
+.rb-option+.lb-option {
+  background-color: rgb(240, 240, 240);
+  padding: 10px;
+  height: 40px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.rb-option:checked+.lb-option {
+  background-color: #4681f4;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.rb-option+.lb-error-options {
+  background-color: darkred;
+  color: white;
+}
+
+.rb-option+.lb-success-options {
+  background-color: darkgreen;
+  color: white;
+}
+
+
+
+
+
 @media(max-width:550px)
 {
     .form-padding

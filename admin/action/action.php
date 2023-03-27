@@ -1,7 +1,6 @@
 <?php
 include('database/db.php');
 session_start();
-
 // Try to sign in
 if (isset($_POST['signinSubmit'])) {
     // Try to server validation checking...
@@ -45,35 +44,36 @@ if (isset($_POST['signinSubmit'])) {
         echo json_encode(array('error' => 'Username & Password is Required.', 'code' => '400'));
         exit;
     }
-} else if (isset($_GET['getQuestion']) && $_GET['getQuestion'] > 0) {
+    exit;
+} 
+if(!isset($_SESSION['student_Id']))
+{
+    echo json_encode(array('error' => 'UNAUTHORIZED.', 'code' => '401'));
+exit;
+}
+
+if (isset($_GET['getQuestion']) && $_GET['getQuestion'] > 0) {
     if (isset($_SESSION['student_Id'])) {
         // Try to check quiz already start yes or no.
         if (isset($_SESSION['quiz_Id'])) {
             return FN_GetQuestion($_SESSION['quiz_Id']);
         } else {
             // Create new Quiz
-            date_default_timezone_set("Asia/Kathmandu");
-            $datetime = date('Y-m-d h:i:s A');
-
-            $SqlData = [
-                'user_Id' => $_SESSION['student_Id'],
-                'creationTime' => $datetime,
-            ];
-
-            $db = new Database();
-            $db->insert('quiz_played', $SqlData);
-            $result = $db->getResult();
-            if ($result[0] > 0) {
-                $_SESSION['quiz_Id'] = $result[0];
-                return FN_GetQuestion($result[0]);
-            }
+            $id = FN_CreateNewQuiz();
+            $_SESSION['quiz_Id'] = $id;
+            return FN_GetQuestion($id);
         }
     } else {
         echo json_encode(array('error' => 'UNAUTHORIZED', 'code' => '401'));
     }
 } else if (isset($_POST['submitAnswared'])) {
     return FN_SubmitAnswared();
-} else {
+} 
+else if(isset($_GET['GetCurrentQuizResult']) && $_GET['GetCurrentQuizResult']>0)
+{
+    return FN_GetCurrentQuiz();
+}
+else {
     echo json_encode(array('error' => 'URL not found.', 'code' => '404'));
 }
 function FN_GetQuestion($quizId = 0, $isShowAnswared = false, $questionId = 0, $isCorrect = false)
@@ -99,6 +99,12 @@ function FN_GetQuestion($quizId = 0, $isShowAnswared = false, $questionId = 0, $
         }
     } else {
         $sql .= ' And Q.id = ' . $questionId;
+        if(FN_GetAnswareCount($_SESSION['quiz_Id']) >= FN_GetMaxQuestionNumber())
+        {
+            date_default_timezone_set("Asia/Kathmandu");
+            $datetime = date('Y-m-d h:i:s A');
+    FN_UpdateQuiz($datetime, $db);
+        }
     }
     $db->select($sql);
     $result = $db->getResult();
@@ -113,7 +119,8 @@ function FN_GetQuestion($quizId = 0, $isShowAnswared = false, $questionId = 0, $
                         'questionId' => $result[0]['q_Id'],
                         'question' => $result[0]['question'],
                         'imageUrl' => $result[0]['imageUrl'],
-                        'options' => $options
+                        'options' => $options,
+                        'currentQuestion' => FN_GetAnswareCount($quizId)
                     )
                 ));
             } else {
@@ -123,7 +130,8 @@ function FN_GetQuestion($quizId = 0, $isShowAnswared = false, $questionId = 0, $
                         'question' => $result[0]['question'],
                         'imageUrl' => $result[0]['imageUrl'],
                         'isCorrect' => $isCorrect,
-                        'options' => $options
+                        'options' => $options,
+                        'currentQuestion' => FN_GetAnswareCount($quizId)
                     )
                 ));
             }
@@ -143,14 +151,25 @@ function FN_SubmitAnswared()
     $db  = new Database();
     date_default_timezone_set("Asia/Kathmandu");
     $datetime = date('Y-m-d h:i:s A');
+    
+    // Try to check max answare is '10'
+    //TODO: Make 0 >>>> 9
+    if(FN_GetAnswareCount($_SESSION['quiz_Id']) < FN_GetMaxQuestionNumber() && FN_CheckIsRunningQuiz($_SESSION['quiz_Id']) == true)
+    {
+        $SqlData = [
+            'quiz_Id' => $_SESSION['quiz_Id'],
+            'creationTime' => $datetime,
+            'answare_Id' => $answered,
+            'question_id' => $questionId,
+        ];
+        $db->insert('quiz_played_answered', $SqlData);
+    }
+    else
+    {
+        // Update Quiz
+        FN_UpdateQuiz($datetime,$db);
+    }
 
-    $SqlData = [
-        'quiz_Id' => $_SESSION['quiz_Id'],
-        'creationTime' => $datetime,
-        'answare_Id' => $answered,
-        'question_id' => $questionId,
-    ];
-    $db->insert('quiz_played_answered', $SqlData);
     $db->select($sql);
     $result = $db->getResult();
     if (count($result) > 0) {
@@ -158,4 +177,74 @@ function FN_SubmitAnswared()
     } else {
         return FN_GetQuestion($_SESSION['quiz_Id'], true, $questionId, false);
     }
+}
+function FN_GetAnswareCount($quizId)
+{
+    $db  = new Database();
+    $ansSQL = 'select count(id) as count from quiz_played_answered where quiz_Id = '.$quizId;
+    $db->select($ansSQL);
+    $ansCOUNT = $db->getResult(); 
+    return $ansCOUNT[0]['count'];
+}
+function FN_CheckIsRunningQuiz($quizId)
+{
+    $db  = new Database();
+    $ansSQL = 'select id from quiz_played where isCompleted = 0 and id = '.$quizId;
+    $db->select($ansSQL);
+    $ansCOUNT = $db->getResult(); 
+    if(count($ansCOUNT) == 1)
+        return true;
+    return false;
+}
+function FN_CreateNewQuiz()
+{
+    date_default_timezone_set("Asia/Kathmandu");
+            $datetime = date('Y-m-d h:i:s A');
+            $SqlData = [
+                'user_Id' => $_SESSION['student_Id'],
+                'creationTime' => $datetime,
+            ];
+
+            $db = new Database();
+            $db->insert('quiz_played', $SqlData);
+            $result = $db->getResult();
+            if ($result[0] > 0) {
+                //$_SESSION['quiz_Id'] = $result[0];
+                return $result[0];
+            }
+            return 0;
+}
+
+function FN_GetCurrentQuiz()
+{
+    if(!isset($_SESSION['quiz_Current_complected']) || $_SESSION['quiz_Current_complected'] <=0)
+{
+    echo json_encode(array('success' => 'Your Result.', 'code' => '200','reuslt'=> array()));
+exit;
+}    
+    $db  = new Database();
+    $ansSQL = "select QPA.id, QQ.question, QO.optionName as option,QO.isPrimary as isTrue, QP.creationTime as startTime, QP.endTime,QPA.creationTime as submitTime
+    From quiz_played_answered as QPA Inner Join quiz_played as QP On QPA.quiz_Id = QP.id 
+    Inner Join quiz_questions as QQ On QPA.question_id = QQ.id
+    Inner Join quiz_options as QO On QPA.answare_Id = QO.id
+    Where QPA.quiz_Id = ". $_SESSION['quiz_Current_complected'] . " Order By QPA.creationTime Desc";
+    //Where QPA.quiz_Id = 42 Order By QPA.creationTime Desc";
+
+    $db->select($ansSQL);
+    $result = $db->getResult(); 
+   echo json_encode($result);
+}
+
+function FN_UpdateQuiz($datetime,$db)
+{
+    $db->update('quiz_played_answered',['isCompleted'=> 1,'endTime' => $datetime]);
+    $result = $db->getResult();
+    $_SESSION['quiz_Current_complected'] = $_SESSION['quiz_Id'];
+    unset($_SESSION['quiz_Id']);
+
+}
+
+function FN_GetMaxQuestionNumber()
+{
+    return 10;
 }
